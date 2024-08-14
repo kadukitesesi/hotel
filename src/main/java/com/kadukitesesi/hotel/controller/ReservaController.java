@@ -3,6 +3,7 @@ package com.kadukitesesi.hotel.controller;
 
 import com.kadukitesesi.hotel.model.Quarto;
 import com.kadukitesesi.hotel.model.Reserva;
+import com.kadukitesesi.hotel.service.QuartoService;
 import com.kadukitesesi.hotel.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class ReservaController {
     @Autowired
     private ReservaService reservaService;
 
+    @Autowired
+    private QuartoService quartoService;
+
     @GetMapping
     public List<Reserva> listarReservas() {
         return reservaService.listarReservas();
@@ -25,7 +29,7 @@ public class ReservaController {
     @PostMapping
     Reserva criarReserva(@RequestBody Reserva reserva) {
         if (reserva.getQuarto() != null && reserva.getQuarto().getId() != null) {
-            Quarto quarto = reservaService.getQuartoById(reserva.getQuarto().getId());
+            Quarto quarto = quartoService.getQuartoById(reserva.getQuarto().getId());
             reserva.setQuarto(quarto);
         }
 
@@ -42,10 +46,26 @@ public class ReservaController {
     }
 
 
+    @PutMapping("/{id}")
+    ResponseEntity<Reserva> editarReserva(@PathVariable Long id, Reserva reserva) {
+        Reserva reservaAtual = reservaService.getReservaById(id);
+        if (reservaAtual == null) {
+            throw new IllegalArgumentException("Quarto buscado inválido");
+        }
+
+        reservaService.salvarReserva(reserva);
+
+        return ResponseEntity.ok().build();
+
+    }
+
+
     @DeleteMapping("/{id}")
     ResponseEntity<Reserva> excluirReserva(@PathVariable Long id) {
-        reservaService.excluirQuartoById(id);
+        reservaService.excluirReservaById(id);
         return ResponseEntity.noContent().build();
     }
+
+    
 
 }

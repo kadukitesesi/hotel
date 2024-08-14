@@ -7,7 +7,11 @@ import com.kadukitesesi.hotel.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -31,11 +35,19 @@ public class ReservaService {
         return reservaRepository.findById(id).orElse(null);
     }
 
-    public void excluirQuartoById(Long id) {
+    public void excluirReservaById(Long id) {
         reservaRepository.deleteById(id);
     }
 
-    public Quarto getQuartoById(Long id) {
-        return quartoRepository.findById(id).orElse(null);
+    public BigDecimal calcularPrecoReserva(Long id) {
+        Optional<Reserva> reservaBuscada = reservaRepository.findById(id);
+        LocalDate chegada = reservaBuscada.get().getChegada();
+        LocalDate saida = reservaBuscada.get().getSaida();
+        Long diasHospedado = ChronoUnit.DAYS.between(chegada, saida);
+
+        BigDecimal valorDiaria = reservaBuscada.get().getQuarto().getPreco();
+
+        BigDecimal valorHospedagem = valorDiaria.multiply(BigDecimal.valueOf(diasHospedado));
+        return valorHospedagem;
     }
 }

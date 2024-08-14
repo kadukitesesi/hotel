@@ -3,7 +3,9 @@ package com.kadukitesesi.hotel.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 public class Reserva {
@@ -14,6 +16,9 @@ public class Reserva {
     private String nomeDaReserva;
     private LocalDate chegada;
     private LocalDate saida;
+
+    @Transient
+    private BigDecimal valorHospedagem;
 
     @ManyToOne
     @JoinColumn(name = "quarto_id")
@@ -57,5 +62,21 @@ public class Reserva {
 
     public void setQuarto(Quarto quarto) {
         this.quarto = quarto;
+    }
+
+    public BigDecimal calcularValorHospedagem() {
+        LocalDate chegada = getChegada();
+        LocalDate saida = getSaida();
+        long diasHospedado = ChronoUnit.DAYS.between(chegada, saida);
+        BigDecimal valorDiaria = this.quarto.getPreco();
+        this.valorHospedagem = valorDiaria.multiply(BigDecimal.valueOf(diasHospedado));
+        return this.valorHospedagem;
+    }
+
+    public BigDecimal getValorHospedagem() {
+        if (this.valorHospedagem == null) {
+            calcularValorHospedagem();
+        }
+        return this.valorHospedagem;
     }
 }

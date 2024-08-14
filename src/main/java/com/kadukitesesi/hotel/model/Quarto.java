@@ -18,7 +18,16 @@ public class Quarto {
     private int banheiros;
     private BigDecimal preco;
     private long numeroDoQuarto;
+    private Boolean disponibilidade;
 
+
+    public Boolean getDisponibilidade() {
+        return disponibilidade;
+    }
+
+    public void setDisponibilidade(Boolean disponibilidade) {
+        this.disponibilidade = disponibilidade;
+    }
 
     public long getNumeroDoQuarto() {
         return numeroDoQuarto;
@@ -51,4 +60,5 @@ public class Quarto {
     public void setId(Long id) {
         this.id = id;
     }
+
 }

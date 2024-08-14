@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/quartos")
@@ -39,6 +41,20 @@ public class QuartoController {
         quartoService.excluirQuartoById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/disponibilidade")
+    public ResponseEntity<List<Quarto>> buscarQuartosDisponiveis() {
+        List<Quarto> quartosDisponiveis = quartoService.listarQuartos().stream()
+                .filter(Quarto::getDisponibilidade)
+                .collect(Collectors.toList());
+
+        if (quartosDisponiveis.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(quartosDisponiveis);
+        }
+    }
+
 
 
 }
