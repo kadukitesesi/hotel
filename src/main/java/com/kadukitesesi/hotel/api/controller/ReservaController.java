@@ -1,4 +1,4 @@
-package com.kadukitesesi.hotel.controller;
+package com.kadukitesesi.hotel.api.controller;
 
 
 import com.kadukitesesi.hotel.model.Quarto;
@@ -6,6 +6,7 @@ import com.kadukitesesi.hotel.model.Reserva;
 import com.kadukitesesi.hotel.service.QuartoService;
 import com.kadukitesesi.hotel.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,16 +47,15 @@ public class ReservaController {
     }
 
 
-    @PutMapping("/{id}")
-    ResponseEntity<Reserva> editarReserva(@PathVariable Long id, Reserva reserva) {
-        Reserva reservaAtual = reservaService.getReservaById(id);
-        if (reservaAtual == null) {
-            throw new IllegalArgumentException("Quarto buscado inválido");
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> atualiarParcialReserva(@PathVariable Long id, @RequestBody Reserva reserva) {
+        try {
+            Reserva reservaAtualizada = reservaService.atualizarParcialReserva(id, reserva);
+            return ResponseEntity.ok(reservaAtualizada);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
-
-        reservaService.salvarReserva(reserva);
-
-        return ResponseEntity.ok().build();
 
     }
 

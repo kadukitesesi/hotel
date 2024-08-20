@@ -1,6 +1,5 @@
 package com.kadukitesesi.hotel.service;
 
-
 import com.kadukitesesi.hotel.repository.QuartoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,5 +28,25 @@ public class QuartoService {
 
     public void excluirQuartoById(Long id) {
         quartoRepository.deleteById(id);
+    }
+
+    public Quarto atualizarParcialQuarto(Long id, Quarto quartoParcial) throws Exception {
+        Quarto quartoAtual = quartoRepository.findById(id)
+                .orElseThrow(() -> new Exception("Quarto não encontrado!"));
+
+        if (quartoParcial.getBanheiros() != 0) {
+            quartoAtual.setBanheiros(quartoParcial.getBanheiros());
+        }
+        if (quartoParcial.getPreco() != null) {
+            quartoAtual.setPreco(quartoParcial.getPreco());
+        }
+        if (quartoParcial.getNumeroDoQuarto() != 0) {
+            quartoAtual.setNumeroDoQuarto(quartoParcial.getNumeroDoQuarto());
+        }
+        if (quartoParcial.getDisponibilidade() != null) {
+            quartoAtual.setDisponibilidade(quartoParcial.getDisponibilidade());
+        }
+
+        return quartoRepository.save(quartoAtual);
     }
 }
