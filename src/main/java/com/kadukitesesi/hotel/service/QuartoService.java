@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.kadukitesesi.hotel.model.Quarto;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QuartoService {
@@ -29,5 +30,15 @@ public class QuartoService {
 
     public void excluirQuartoById(Long id) {
         quartoRepository.deleteById(id);
+    }
+
+    public void deixarIndisponivel(Long id) {
+        Optional<Quarto> quartoBuscado = quartoRepository.findById(id);
+        quartoBuscado.get().setDisponibilidade(false);
+    }
+
+    public void deixarDisponivel(Long id) {
+        Optional<Quarto> quartoBuscado = quartoRepository.findById(id);
+        quartoBuscado.get().setDisponibilidade(true);
     }
 }

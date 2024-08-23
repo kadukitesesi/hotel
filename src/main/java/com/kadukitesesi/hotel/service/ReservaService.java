@@ -17,17 +17,29 @@ import java.util.Optional;
 @Service
 public class ReservaService {
 
-    @Autowired
-    ReservaRepository reservaRepository;
 
-    @Autowired
+    private ReservaRepository reservaRepository;
+
+    private QuartoService quartoService;
+
     private QuartoRepository quartoRepository;
+
+
+
+    public ReservaService(ReservaRepository reservaRepository, QuartoService quartoService, QuartoRepository quartoRepository) {
+        this.reservaRepository = reservaRepository;
+        this.quartoService = quartoService;
+        this.quartoRepository = quartoRepository;
+    }
 
     public List<Reserva> listarReservas() {
         return reservaRepository.findAll();
     }
 
     public Reserva salvarReserva(Reserva reserva) {
+
+      Optional<Quarto> quarto =  quartoRepository.findById(reserva.getQuarto().getId());
+        quartoService.deixarIndisponivel(quarto.get().getId());
         return reservaRepository.save(reserva);
     }
 
