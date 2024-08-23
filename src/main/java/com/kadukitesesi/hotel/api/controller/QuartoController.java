@@ -1,15 +1,13 @@
-package com.kadukitesesi.hotel.controller;
-
-
+package com.kadukitesesi.hotel.api.controller;
 import com.kadukitesesi.hotel.model.Quarto;
 import com.kadukitesesi.hotel.service.QuartoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/quartos")
@@ -30,7 +28,7 @@ public class QuartoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Quarto> buscarQuarto( @PathVariable Long id) {
+    public ResponseEntity<Quarto> buscarQuarto(@PathVariable Long id) {
         Quarto quarto = quartoService.getQuartoById(id);
         return quarto != null ? ResponseEntity.ok(quarto)
                 : ResponseEntity.notFound().build();
@@ -56,5 +54,15 @@ public class QuartoController {
     }
 
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> atualizarParcialQuarto(@PathVariable Long id, @RequestBody Quarto quartoParcial) {
+        try {
+            Quarto quartoAtualizado = quartoService.atualizarParcialQuarto(id, quartoParcial);
+            return ResponseEntity.ok(quartoAtualizado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
 
+    }
 }

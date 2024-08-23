@@ -62,4 +62,23 @@ public class ReservaService {
         BigDecimal valorHospedagem = valorDiaria.multiply(BigDecimal.valueOf(diasHospedado));
         return valorHospedagem;
     }
+
+    public Reserva atualizarParcialReserva(Long id, Reserva reservaParcial) throws Exception {
+        Reserva reservaAtual = reservaRepository.findById(id)
+                .orElseThrow(() -> new Exception("reserva não encontrada!"));
+
+        if (reservaAtual.getNomeDaReserva() != null) {
+            reservaAtual.setNomeDaReserva(reservaParcial.getNomeDaReserva());
+        }
+        if (reservaParcial.getId() != null) {
+            reservaAtual.setId(reservaParcial.getId());
+        }
+
+        if (reservaAtual.getQuarto() != null) {
+            reservaAtual.setQuarto(reservaParcial.getQuarto());
+        }
+
+
+        return reservaRepository.save(reservaAtual);
+    }
 }
