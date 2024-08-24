@@ -57,7 +57,7 @@ public class QuartoController {
     @PatchMapping("/{id}")
     public ResponseEntity<?> atualizarParcialQuarto(@PathVariable Long id, @RequestBody Quarto quartoParcial) {
         try {
-            Quarto quartoAtualizado = quartoService.atualizarParcialQuarto(id, quartoParcial);
+            Quarto quartoAtualizado = quartoService.atualizarParcialquarto(id, quartoParcial);
             return ResponseEntity.ok(quartoAtualizado);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
