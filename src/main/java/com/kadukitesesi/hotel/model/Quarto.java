@@ -17,7 +17,7 @@ public class Quarto {
     private Long id;
     private int banheiros;
     private BigDecimal preco;
-    private long numeroDoQuarto;
+    private Long numeroDoQuarto;
     private Boolean disponibilidade;
 
 
@@ -29,11 +29,11 @@ public class Quarto {
         this.disponibilidade = disponibilidade;
     }
 
-    public long getNumeroDoQuarto() {
+    public Long getNumeroDoQuarto() {
         return numeroDoQuarto;
     }
 
-    public void setNumeroDoQuarto(long numeroDoQuarto) {
+    public void setNumeroDoQuarto(Long numeroDoQuarto) {
         this.numeroDoQuarto = numeroDoQuarto;
     }
 

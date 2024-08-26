@@ -37,11 +37,24 @@ public class ReservaService {
     }
 
     public Reserva salvarReserva(Reserva reserva) {
+        Long quartoId = reserva.getQuarto().getId();
+        LocalDate chegada = reserva.getChegada();
+        LocalDate saida = reserva.getSaida();
 
-      Optional<Quarto> quarto =  quartoRepository.findById(reserva.getQuarto().getId());
-        quartoService.deixarIndisponivel(quarto.get().getId());
-        return reservaRepository.save(reserva);
+        if (!verificaDisponibilidade(quartoId, chegada, saida)) {
+            throw new IllegalArgumentException("Quarto não está disponível para o período solicitado.");
+        }
+
+        Optional<Quarto> quarto = quartoRepository.findById(quartoId);
+
+        if (quarto.isPresent()) {
+            quartoService.deixarIndisponivel(quarto.get().getId());
+            return reservaRepository.save(reserva);
+        } else {
+            throw new IllegalArgumentException("Quarto não encontrado.");
+        }
     }
+
 
     public Reserva getReservaById(Long id) {
         return reservaRepository.findById(id).orElse(null);
@@ -51,7 +64,7 @@ public class ReservaService {
         reservaRepository.deleteById(id);
     }
 
-    public BigDecimal calcularPrecoReserva(Long id) {
+    /*public BigDecimal calcularPrecoReserva(Long id) {
         Optional<Reserva> reservaBuscada = reservaRepository.findById(id);
         LocalDate chegada = reservaBuscada.get().getChegada();
         LocalDate saida = reservaBuscada.get().getSaida();
@@ -61,7 +74,7 @@ public class ReservaService {
 
         BigDecimal valorHospedagem = valorDiaria.multiply(BigDecimal.valueOf(diasHospedado));
         return valorHospedagem;
-    }
+    }*/
 
     public Reserva atualizarParcialReserva(Long id, Reserva reservaParcial) throws Exception {
         Reserva reservaAtual = reservaRepository.findById(id)
@@ -78,7 +91,12 @@ public class ReservaService {
             reservaAtual.setQuarto(reservaParcial.getQuarto());
         }
 
-
         return reservaRepository.save(reservaAtual);
     }
+
+    public boolean verificaDisponibilidade(Long quartoId, LocalDate chegada, LocalDate saida) {
+        List<Reserva> reservas = reservaRepository.findReservasByQuartoIdAndDatas(quartoId, chegada, saida);
+        return reservas.isEmpty();
+    }
+
 }
