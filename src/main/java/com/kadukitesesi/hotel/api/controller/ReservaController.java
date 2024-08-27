@@ -1,6 +1,7 @@
 package com.kadukitesesi.hotel.api.controller;
 
 
+import com.kadukitesesi.hotel.api.exception.QuartoIndisponivelException;
 import com.kadukitesesi.hotel.model.Quarto;
 import com.kadukitesesi.hotel.model.Reserva;
 import com.kadukitesesi.hotel.service.QuartoService;
@@ -28,18 +29,26 @@ public class ReservaController {
     }
 
     @PostMapping
-    Reserva criarReserva(@RequestBody Reserva reserva) {
-        if (reserva.getQuarto() != null && reserva.getQuarto().getId() != null) {
-            Quarto quarto = quartoService.getQuartoById(reserva.getQuarto().getId());
-            reserva.setQuarto(quarto);
-        }
+    public Reserva criarReserva(@RequestBody Reserva reserva) throws Exception {
+        try {
+            if (reserva.getQuarto() != null && reserva.getQuarto().getId() != null) {
+                Quarto quarto = quartoService.getQuartoById(reserva.getQuarto().getId());
+                reserva.setQuarto(quarto);
+            }
 
-        Reserva reservaSalva = reservaService.salvarReserva(reserva);
-        return ResponseEntity.ok(reservaSalva).getBody();
+            Reserva reservaSalva = reservaService.salvarReserva(reserva);
+            return ResponseEntity.status(HttpStatus.CREATED).body(reservaSalva).getBody();
+
+        } catch (QuartoIndisponivelException e) {
+            throw new QuartoIndisponivelException("Quarto indisponivel no momento");
+        } catch (Exception e) {
+            throw new Exception("Não foi possivel criar sua reserva");
+        }
     }
 
+
     @GetMapping("/{id}")
-    ResponseEntity<Reserva> reservaPorId(@PathVariable Long id) {
+    public ResponseEntity<Reserva> reservaPorId(@PathVariable Long id) {
         Reserva reserva = reservaService.getReservaById(id);
 
         return reserva != null ? ResponseEntity.ok(reserva) :
@@ -61,7 +70,7 @@ public class ReservaController {
 
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Reserva> excluirReserva(@PathVariable Long id) {
+    public ResponseEntity<Reserva> excluirReserva(@PathVariable Long id) {
         reservaService.excluirReservaById(id);
         return ResponseEntity.noContent().build();
     }

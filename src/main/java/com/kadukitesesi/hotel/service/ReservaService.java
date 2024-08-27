@@ -1,5 +1,6 @@
 package com.kadukitesesi.hotel.service;
 
+import com.kadukitesesi.hotel.api.exception.QuartoIndisponivelException;
 import com.kadukitesesi.hotel.model.Quarto;
 import com.kadukitesesi.hotel.model.Reserva;
 import com.kadukitesesi.hotel.repository.QuartoRepository;
@@ -36,13 +37,13 @@ public class ReservaService {
         return reservaRepository.findAll();
     }
 
-    public Reserva salvarReserva(Reserva reserva) {
+    public Reserva salvarReserva(Reserva reserva) throws QuartoIndisponivelException {
         Long quartoId = reserva.getQuarto().getId();
         LocalDate chegada = reserva.getChegada();
         LocalDate saida = reserva.getSaida();
 
         if (!verificaDisponibilidade(quartoId, chegada, saida)) {
-            throw new IllegalArgumentException("Quarto não está disponível para o período solicitado.");
+            throw new QuartoIndisponivelException("Quarto não está disponível para o período solicitado.");
         }
 
         Optional<Quarto> quarto = quartoRepository.findById(quartoId);
@@ -51,7 +52,7 @@ public class ReservaService {
             quartoService.deixarIndisponivel(quarto.get().getId());
             return reservaRepository.save(reserva);
         } else {
-            throw new IllegalArgumentException("Quarto não encontrado.");
+            throw new QuartoIndisponivelException("Quarto não encontrado.");
         }
     }
 
@@ -63,18 +64,6 @@ public class ReservaService {
     public void excluirReservaById(Long id) {
         reservaRepository.deleteById(id);
     }
-
-    /*public BigDecimal calcularPrecoReserva(Long id) {
-        Optional<Reserva> reservaBuscada = reservaRepository.findById(id);
-        LocalDate chegada = reservaBuscada.get().getChegada();
-        LocalDate saida = reservaBuscada.get().getSaida();
-        Long diasHospedado = ChronoUnit.DAYS.between(chegada, saida);
-
-        BigDecimal valorDiaria = reservaBuscada.get().getQuarto().getPreco();
-
-        BigDecimal valorHospedagem = valorDiaria.multiply(BigDecimal.valueOf(diasHospedado));
-        return valorHospedagem;
-    }*/
 
     public Reserva atualizarParcialReserva(Long id, Reserva reservaParcial) throws Exception {
         Reserva reservaAtual = reservaRepository.findById(id)
